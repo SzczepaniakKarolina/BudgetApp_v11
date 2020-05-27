@@ -1,2 +1,6 @@
 ﻿Client/obj
 Server/obj
+Client/bin
+Server/bin
+Shared/bin
+Shared/obj

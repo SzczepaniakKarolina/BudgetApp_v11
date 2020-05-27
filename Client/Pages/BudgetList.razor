@@ -1,0 +1,101 @@
+﻿@page "/budget-list"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using BudgetApp_v11.Shared
+@attribute [Authorize]
+@inject HttpClient Http
+
+
+<h1>List of budgets</h1>
+<hr />
+<div class="block-content">
+    <div class="row">
+        <div class="col-8">
+            @if (budgets == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+                <div class="list-group">
+                    @foreach (var budget in budgets)
+                    {
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <b> @budget.Name</b> <i>@budget.CurrentValue zł</i>
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+        <div class="col-4">
+            <button class="btn btn-light" href="#collapseExample" @onclick="ShowAddBudgetForm">Add budget</button>
+            <div class="@AddBudgetFormCssClass">
+                <div class="content"> 
+                    <div class="card card-body">
+                        <EditForm Model="@budgetModel" OnValidSubmit="HandleValidSubmit">
+                            <h3>Add budget</h3>
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+                            <div class="form-group">
+                                <label for="name">Name of budget</label>
+                                <InputText class="form-control" id="name" @bind-Value="budgetModel.Name" />
+                            </div>
+                            <button class="btn btn-success" type="submit">Submit</button>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    private Budget[] budgets;
+    private Budget budgetModel = new Budget();
+    private bool collapseAddBudgetForm = true;
+
+    private string AddBudgetFormCssClass => collapseAddBudgetForm ? "collapse" : null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadBudgets();
+        StateHasChanged();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await AddBudget();
+        await LoadBudgets();
+        StateHasChanged();
+
+    }
+
+    private async Task LoadBudgets()
+    {
+        try
+        {
+            budgets = await Http.GetFromJsonAsync<Budget[]>("Budget");
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+    private async Task AddBudget()
+    {
+        try
+        {
+            await Http.PostAsJsonAsync("Budget", budgetModel);
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+    private void ShowAddBudgetForm()
+    {
+        collapseAddBudgetForm = !collapseAddBudgetForm;
+    }
+}
+

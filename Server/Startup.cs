@@ -13,6 +13,8 @@ using Microsoft.Extensions.Hosting;
 using System.Linq;
 using BudgetApp_v11.Server.Data;
 using BudgetApp_v11.Server.Models;
+using BudgetApp_v11.Server.Services.Contract;
+using BudgetApp_v11.Server.Services;
 
 namespace BudgetApp_v11.Server
 {
@@ -41,7 +43,7 @@ namespace BudgetApp_v11.Server
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();
-
+            services.AddScoped<IBudgetService, BudgetService>();
             services.AddControllersWithViews();
             services.AddRazorPages();
         }

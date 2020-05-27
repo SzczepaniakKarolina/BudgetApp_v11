@@ -1,4 +1,5 @@
 ﻿using BudgetApp_v11.Server.Models;
+using BudgetApp_v11.Shared;
 using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
@@ -17,5 +18,7 @@ namespace BudgetApp_v11.Server.Data
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
         }
+        public DbSet<Budget> Budgets { get; set; }
+        public DbSet<Purpose> Purposes { get; set; }
     }
 }
